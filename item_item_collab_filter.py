@@ -71,6 +71,7 @@ def prediction(user, item, graph, mode):
 
 if __name__ == '__main__':
 	graph =nx.read_gpickle(sys.argv[1])
+	print "finished loading graph"
 	mse_cosine = []
 	mse_pearson = []
 	for node in graph.nodes:
@@ -89,6 +90,9 @@ if __name__ == '__main__':
 				true_value.append(graph.edges[node,movie]["rating"])
 				predicted_value_pearson.append(prediction(node, movie, graph, "pearson"))
 				predicted_value_cosine.append(prediction(node, movie, graph, "cosine"))
+			print "the true values were", true_value
+			print "the predicted value for peearson was ", predicted_value_pearson
+			print "the predicted value for cosine was", predicted_value_cosine
 			mse_pearson.append(mean_squared_error(true_value,predicted_value_pearson))
 			mse_cosine.append(mean_squared_error(true_value, predicted_value_cosine))
 	print mse_cosine
