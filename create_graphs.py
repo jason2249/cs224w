@@ -24,7 +24,7 @@ NETWORKX_USER_CLASS = "user"
 #graph_mode = "snap-multimodal-network"
 graph_mode = "networkx-bipartite"
 INCLUDE_TIMESTAMPS = False
-TEST_MODE = True # Set to true to build a smaller graph of the first 100 movies
+TEST_MODE = True # Set to true to build a smaller graph of the first 70% movies
 graph = None
 
 def create_graph():
@@ -47,8 +47,9 @@ def create_graph():
 def open_data_directory(file_dir):
     files = [join(file_dir, f) for f in listdir(file_dir) if isfile(join(file_dir, f))]
     if TEST_MODE:
-        for file in files[:100]:
+        for file in files[:2500]:
             load_file(file)
+        print "done loading"
     else:
         for file in files:
             load_file(file)
@@ -62,7 +63,7 @@ def load_file(filename):
             
             if ":" in line:
                 # Format of first line of file is "MOVIE_ID:"
-                movie_id = int(line[:-1])
+                movie_id = int(line[:line.index(":")])
                 if movie_id % 10 == 0:
                     print("The movie id is " + str(movie_id))
                 add_movie(movie_id)
@@ -124,12 +125,12 @@ if __name__=="__main__":
     open_data_directory("training_set")
 
     # Here's how to do bipartite stuff with the graph:
-    #print(nx.is_connected(graph))
-    #movie_nodes = set(n for n,d in graph.nodes(data=True) if d['bipartite']==NETWORKX_MOVIE_BIPARTITE_ID)
-    #print(movie_nodes)
-    #movie_graph = bipartite.projected_graph(graph, movie_nodes)
-    #print(movie_graph.edges())
-    nx.write_gpickle(graph, "netflix.gpickle")
+    # print(nx.is_connected(graph))
+    # movie_nodes = set(n for n,d in graph.nodes(data=True) if d['bipartite']==NETWORKX_MOVIE_BIPARTITE_ID)
+    # print(movie_nodes)
+    # movie_graph = bipartite.projected_graph(graph, movie_nodes)
+    # print(movie_graph.edges())
+    nx.write_gpickle(graph, "netflix_medium.gpickle")
     # To load the graph again, write:
     #loaded = nx.read_gpickle("test.gpickle")
 

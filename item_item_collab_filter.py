@@ -56,17 +56,23 @@ def similarity(item, movie, graph, user_to_ignore, mode):
 	if mode == "pearson":
 		return pearson_similarity(item, movie, graph, user_to_ignore)
 	return cosine_similarity(item, movie, graph, user_to_ignore)
-def prediction(user, item, graph, mode):
+
+def prediction(user, item, graph, mode, movies_to_ignore):
 	numerator = 0.
 	denominator = 0.
 	for edge in graph.edges(user):
 		movie = edge[1]
-		if movie == item:
+		if movie in movies_to_ignore:
 			continue
 		sim = similarity(item,movie,graph,user, mode)
 		numerator += sim * graph.edges[edge]['rating']
 		denominator += np.abs(sim)
-	return numerator/denominator
+	adjustment = 0
+	if mode == "cosine":
+		for neighbor in graph.neighbors(user):
+			adjustment += graph.edges[user,neighbor]['rating']
+	adjustment /= graph.degree(user)
+	return numerator/denominator + adjustment
 
 
 if __name__ == '__main__':
@@ -79,17 +85,17 @@ if __name__ == '__main__':
 		predicted_value_pearson = []
 		predicted_value_cosine = []
 		if graph.nodes[node]['bipartite'] == 1:
-			if graph.degree(node) < 20:
+			if graph.degree(node) < 35:
 				continue
-			
+			print graph.degree(node)
 			movies_list = [movie for movie in graph.neighbors(node)]
 			train = int(.9 * len(movies_list))
 			#only use the first 90% so that we have some stuff to test on
 			movies_to_test = movies_list[train:]
 			for movie in movies_to_test:
 				true_value.append(graph.edges[node,movie]["rating"])
-				predicted_value_pearson.append(prediction(node, movie, graph, "pearson"))
-				predicted_value_cosine.append(prediction(node, movie, graph, "cosine"))
+				predicted_value_pearson.append(prediction(node, movie, graph, "pearson", movies_to_test))
+				predicted_value_cosine.append(prediction(node, movie, graph, "cosine", movies_to_test))
 			print "the true values were", true_value
 			print "the predicted value for peearson was ", predicted_value_pearson
 			print "the predicted value for cosine was", predicted_value_cosine
