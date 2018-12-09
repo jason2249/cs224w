@@ -15,26 +15,33 @@ from project_onto_movies import project_graph
 def predict_rating(bipartite_graph, projected_graph, user, movie):
 	similar_movies = set(projected_graph.neighbors(movie))
 
-	avg_ratings = []
+	#this didn't work
+	# avg_ratings = []
+	# for similar_movie in similar_movies:
+	# 	user1 = set(bipartite_graph.neighbors(movie))
+	# 	user2 = set(bipartite_graph.neighbors(similar_movie))
+	# 	#make sure that our user rated both movies
+	# 	if user not in user2:
+	# 		continue
+	# 	shared = user1.intersection(user2)
+	# 	ratings = 0.
+	# 	count = 0.
+	# 	for shared_user in shared:
+	# 		ratings += bipartite_graph.edges[shared_user,similar_movie]['rating']
+	# 		count += 1
+	# 	avg_ratings.append(ratings/count)
+	# print(np.mean(avg_ratings))
+	# print(bipartite_graph.edges[user,movie]['rating'])
+	# return np.mean(avg_ratings)
+	ratings = []
 	for similar_movie in similar_movies:
-		user1 = set(bipartite_graph.neighbors(movie))
-		user2 = set(bipartite_graph.neighbors(similar_movie))
-		#make sure that our user rated both movies
-		if user not in user2:
-			continue
-		shared = user1.intersection(user2)
-		ratings = 0.
-		count = 0.
-		for shared_user in shared:
-			ratings += bipartite_graph.edges[shared_user,similar_movie]['rating']
-			count += 1
-		avg_ratings.append(ratings/count)
-	print(np.mean(avg_ratings))
+		if user in bipartite_graph.neighbors(similar_movie):
+			ratings.append(bipartite_graph.edges[user,similar_movie]['rating'])
+	print(np.mean(ratings))
 	print(bipartite_graph.edges[user,movie]['rating'])
-	return np.mean(avg_ratings)
-
+	return np.mean(ratings)
 if __name__ == '__main__':
-	graph = nx.read_gpickle('netflix_tiny.gpickle')
+	graph = nx.read_gpickle('netflix_small.gpickle')
 	projected,_ = project_graph(graph)
 	num = 0
 	mse = []
