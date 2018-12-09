@@ -97,7 +97,7 @@ if __name__ == '__main__':
 				predicted_value_pearson.append(prediction(node, movie, graph, "pearson", movies_to_test))
 				predicted_value_cosine.append(prediction(node, movie, graph, "cosine", movies_to_test))
 			print "the true values were", true_value
-			print "the predicted value for peearson was ", predicted_value_pearson
+			print "the predicted value for pearson was ", predicted_value_pearson
 			print "the predicted value for cosine was", predicted_value_cosine
 			mse_pearson.append(mean_squared_error(true_value,predicted_value_pearson))
 			mse_cosine.append(mean_squared_error(true_value, predicted_value_cosine))
