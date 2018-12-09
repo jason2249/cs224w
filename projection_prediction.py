@@ -29,6 +29,8 @@ def predict_rating(bipartite_graph, projected_graph, user, movie):
 			ratings += bipartite_graph.edges[shared_user,similar_movie]['rating']
 			count += 1
 		avg_ratings.append(ratings/count)
+	print(np.mean(avg_ratings))
+	print(bipartite_graph.edges[user,movie]['rating'])
 	return np.mean(avg_ratings)
 
 if __name__ == '__main__':

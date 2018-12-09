@@ -26,7 +26,6 @@ def project_graph(graph):
 			new_graph_1.add_node(node)
 			new_graph_2.add_node(node)
 	pairs_done = set()
-	print(len(new_graph_1.nodes))
 	count = 0
 	for node1 in new_graph_1:
 		if count % 10 == 0:
@@ -47,10 +46,9 @@ def project_graph(graph):
 			if pearson > .75:
 				new_graph_1.add_edge(node1,node2)
 				new_graph_2.add_edge(node1,node2, weight = 1)
-			if pearson < .75:
+			if pearson < -.75:
 				new_graph_2.add_edge(node1,node2, weight = -1)
 		count += 1
-	print(len(new_graph_1.edges))
 
 	return new_graph_1, new_graph_2
 
