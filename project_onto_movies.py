@@ -44,10 +44,10 @@ def project_graph(graph):
 			if node1_ratings == []:
 				continue
 			pearson = scipy.stats.pearsonr(node1_ratings, node2_ratings)[0]
-			if pearson > .5:
+			if pearson > .75:
 				new_graph_1.add_edge(node1,node2)
 				new_graph_2.add_edge(node1,node2, weight = 1)
-			if pearson < .5:
+			if pearson < .75:
 				new_graph_2.add_edge(node1,node2, weight = -1)
 		count += 1
 	print(len(new_graph_1.edges))
