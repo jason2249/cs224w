@@ -32,10 +32,7 @@ def project_graph(graph):
 				continue
 			node1_ratings = []
 			node2_ratings = []
-			neighbors = graph.neighbors(node1).intersection(graph.neighbors(node2))
-			if count % 10 == 0:
-				print("number of neighbors in common is")
-				print(len(neighbors))
+			neighbors = set(graph.neighbors(node1)).intersection(set(graph.neighbors(node2)))
 			for user in neighbors:
 				node1_ratings.append(graph.edges[user,node1]['rating'])
 				node2_ratings.append(graph.edges[user,node2]['rating'])
