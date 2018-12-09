@@ -17,17 +17,21 @@ NETWORKX_USER_CLASS = "user"
 
 #project an edge only if the two movies have both positive ratings (pearson coeff of > .5)
 def project_graph(graph):
-	new_graph = nx.Graph()
+	#new_graph_1 is only positive correlation
+	#new_graph_2 is negatively correlation between nodes
+	new_graph_1 = nx.Graph()
+	new_graph_2 = nx.Graph()
 	for node, d in graph.nodes(data =True):
 		if d['bipartite'] == NETWORKX_MOVIE_BIPARTITE_ID: 
-			new_graph.add_node(node)
+			new_graph_1.add_node(node)
+			new_graph_2.add_node(node)
 	pairs_done = set()
-	print(len(new_graph.nodes))
+	print(len(new_graph_1.nodes))
 	count = 0
-	for node1 in new_graph:
+	for node1 in new_graph_1:
 		if count % 10 == 0:
 			print count
-		for node2 in new_graph:
+		for node2 in new_graph_1:
 			if (node1,node2) in pairs_done or node1 == node2:
 				continue
 			node1_ratings = []
@@ -39,12 +43,16 @@ def project_graph(graph):
 			#if they are strongly correlated
 			if node1_ratings == []:
 				continue
-			if scipy.stats.pearsonr(node1_ratings, node2_ratings) > .5:
-				new_graph.add_edge(node1,node2)
+			pearson = scipy.stats.pearsonr(node1_ratings, node2_ratings)[0]
+			if pearson > .5:
+				new_graph_1.add_edge(node1,node2)
+				new_graph_2.add_edge(node1,node2, weight = 1)
+			if pearson < .5:
+				new_graph_2.add_edge(node1,node2, weight = -1)
 		count += 1
-	print(len(new_graph.edges))
+	print(len(new_graph_1.edges))
 
-	return new_graph
+	return new_graph_1, new_graph_2
 
 
 def test_graph():
@@ -60,9 +68,11 @@ def test_graph():
 	return graph
 
 if __name__ == '__main__':
-	graph = nx.read_gpickle('netflix_tiny.gpickle')
-	new_graph = project_graph(graph)
-	nx.write_gpickle(new_graph, "projected_graph_tiny.gpickle")
+	graph = nx.read_gpickle('netflix.gpickle')
+	new_graph_1, new_graph_2 = project_graph(graph)
+
+	nx.write_gpickle(new_graph_1, "projected_graph_positive.gpickle")
+	nx.write_gpickle(new_graph_2, "projected_graph_pos_neg.gpickle")
 	#graph = test_graph()
 	#print(project_graph(graph).edges)
 
