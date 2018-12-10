@@ -1,5 +1,6 @@
 import networkx as nx
 import numpy as np
+import scipy.stats
 
 # communities = list(nx.algorithms.community.greedy_modularity_communities(G))
 # print nx.algorithms.cluster.clustering(G)
@@ -116,7 +117,7 @@ def kWaySpectralClustering(Graph,A,D,k):
         i += 1
     return node_to_cluster
 
-G = nx.read_gpickle("movies2500.gpickle")
+G = nx.read_gpickle("projected_graph_positive2500.gpickle")
 A = get_adjacency_matrix(G)
 D = get_sparse_degree_matrix(G)
 
@@ -124,7 +125,7 @@ D = get_sparse_degree_matrix(G)
 # print len(c1), len(c2)
 # print c1
 # print c2
-k = 50
+k = 100
 movie_to_cluster = kWaySpectralClustering(G,A,D,k)
 movieMap = {}
 for i in range(k):
@@ -134,9 +135,37 @@ with open("movie_titles.txt") as f:
 		splitline = line.split(",")
 		movieId = int(splitline[0])
 		if movieId in movie_to_cluster:
-			movieMap[movie_to_cluster[movieId]].append(splitline[2][:-1])
+			movieMap[movie_to_cluster[movieId]].append((splitline[2][:-1], movieId))
 	for i in range(k):
 		print len(movieMap[i]), "movies in cluster #", i
 		print movieMap[i]
 
 
+wholeGraph = nx.read_gpickle("netflix.gpickle")
+totalCoeff = 0.0
+for clusterId in movieMap:
+	cluster = movieMap[clusterId]
+	sumCorrelation = 0.0
+	numPairs = 0
+	for movieName1, movieId1 in cluster:
+		for movieName2, movieId2 in cluster:
+			if movieId1 == movieId2:
+				continue
+			peopleWhoRatedBoth = set(wholeGraph.neighbors(movieId1)).intersection(set(wholeGraph.neighbors(movieId2)))
+			movie1ratings = []
+			movie2ratings = []
+			for user in peopleWhoRatedBoth:
+				movie1ratings.append(wholeGraph.edges[user,movieId1]['rating'])
+				movie2ratings.append(wholeGraph.edges[user,movieId2]['rating'])
+			res = scipy.stats.pearsonr(movie1ratings, movie2ratings)[0]
+			if res != res:
+				continue
+			sumCorrelation += res
+			numPairs += 1
+	if numPairs == 0:
+		print "Average Pearson correlation of cluster #" + str(clusterId) + ":", 0.0
+		continue
+	coeffForCluster = sumCorrelation / numPairs
+	totalCoeff += coeffForCluster
+	print "Average Pearson correlation of cluster #" + str(clusterId) + ":", coeffForCluster
+print "Average coeff for all clusters:", totalCoeff / len(movieMap)
