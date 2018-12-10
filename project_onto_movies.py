@@ -26,7 +26,6 @@ def project_graph(graph):
 			new_graph_1.add_node(node)
 			new_graph_2.add_node(node)
 	pairs_done = set()
-	print(len(new_graph_1.nodes))
 	count = 0
 	for node1 in new_graph_1:
 		if count % 10 == 0:
@@ -44,13 +43,12 @@ def project_graph(graph):
 			if node1_ratings == []:
 				continue
 			pearson = scipy.stats.pearsonr(node1_ratings, node2_ratings)[0]
-			if pearson > .5:
+			if pearson > .75:
 				new_graph_1.add_edge(node1,node2)
 				new_graph_2.add_edge(node1,node2, weight = 1)
-			if pearson < .5:
+			if pearson < -.75:
 				new_graph_2.add_edge(node1,node2, weight = -1)
 		count += 1
-	print(len(new_graph_1.edges))
 
 	return new_graph_1, new_graph_2
 
@@ -68,11 +66,12 @@ def test_graph():
 	return graph
 
 if __name__ == '__main__':
-	graph = nx.read_gpickle('netflix.gpickle')
+	graph = nx.read_gpickle('netflix_tiny.gpickle')
 	new_graph_1, new_graph_2 = project_graph(graph)
-
-	nx.write_gpickle(new_graph_1, "projected_graph_positive.gpickle")
-	nx.write_gpickle(new_graph_2, "projected_graph_pos_neg.gpickle")
+	nx.write_edgelist(new_graph_1, "projected_graph_positive_tiny.edgelist")
+	nx.write_edgelist(new_graph_2, "projected_graph_pos_neg_tiny.edgelist")
+	#nx.write_gpickle(new_graph_1, "projected_graph_positive_med.gpickle")
+	#nx.write_gpickle(new_graph_2, "projected_graph_pos_neg_med.gpickle")
 	#graph = test_graph()
 	#print(project_graph(graph).edges)
 

@@ -2,10 +2,10 @@ from os import listdir
 from os.path import isfile, join
 from dateutil.parser import parse
 import snap
+# User IDs and movie IDs collide... sigh
 import networkx as nx
 from networkx.algorithms import bipartite
 
-# User IDs and movie IDs collide... sigh
 USER_ID_OFFSET = 20000
 
 SNAP_MM_MOVIE_MODE = "movie_mode"
