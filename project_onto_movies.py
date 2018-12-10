@@ -66,11 +66,12 @@ def test_graph():
 	return graph
 
 if __name__ == '__main__':
-	graph = nx.read_gpickle('netflix.gpickle')
+	graph = nx.read_gpickle('netflix_tiny.gpickle')
 	new_graph_1, new_graph_2 = project_graph(graph)
-
-	nx.write_gpickle(new_graph_1, "projected_graph_positive.gpickle")
-	nx.write_gpickle(new_graph_2, "projected_graph_pos_neg.gpickle")
+	nx.write_edgelist(new_graph_1, "projected_graph_positive_tiny.edgelist")
+	nx.write_edgelist(new_graph_2, "projected_graph_pos_neg_tiny.edgelist")
+	#nx.write_gpickle(new_graph_1, "projected_graph_positive_med.gpickle")
+	#nx.write_gpickle(new_graph_2, "projected_graph_pos_neg_med.gpickle")
 	#graph = test_graph()
 	#print(project_graph(graph).edges)
 
